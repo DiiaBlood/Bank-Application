@@ -18,9 +18,10 @@ namespace windows{
 // Function definitions
 void Setup();
 void Run();
+void Foo();
 
 // Program's constants
-const float WinW = 480.0f;
+const float WinW = 800.0f;
 const float WinH = 480.0f;
 const Color WinColor = GRAY;
 const char* WinName = "Bank Application - Muktada A. Hatem";
@@ -43,29 +44,18 @@ int main(){
     Color something = BLACK;
     Rectangle OE = {94, 20, 50, 59};
     while (!WindowShouldClose()){
-        // PollInputEvents();
+        ClearBackground(WinColor);
         BeginDrawing();
-        // if (GetCollisionRec({GetMousePosition().x, GetMousePosition().y, 1, 1}, {20, 20, 200, 44}).height){
-        //     SS = true;
-        // } else { SS = false; }
-        // GuiTextBox({20, 20, 200, 44}, buffer, 64, SS);
-        // Gui
-        // GuiDropdownBox({40, 80, 200, 30}, "Something; something else; wow; cool!;2sd;sf;asf;asf;asf;as;f;asf;as;f;asf;as;f", &Active, true);
-        // GuiComboBox({40, 80, 200, 30}, "Something;Interesting", &Active);
-        // GuiScrollPanel({20, 160, 200, 44}, "EEE", {22, 165, 50, 50}, &OO, &OE);
-        // GuiTextBox({20, 160, 200, 44}, buffer2, 64, true);
-        
-        // cout << buffer << endl;
-        // if (IsKeyPressed(KEY_ENTER)){
-        //     cout << strlen(buffer) << endl;
-        //     Notebook.Add(buffer, "094843985", buffer, buffer, 696969, 0, buffer);
-        //     Notebook.Display();
-        //     std::fill(buffer, buffer+64, NULL);
-        // }
+
+        GuiScrollPanel({0, 20, 480, 460}, "Accounts", {0, 0, 0, 1200}, &OO, &OE);
+
+        BeginScissorMode(0, 42, 465, 438);
+        GuiButton({4, 45+OO.y, 460, 40}, "+");
+        DrawCircle(100, 600 + OO.y, 50, RED);        
+        EndScissorMode();
 
         // Load the run function every frame
         Run();
-        ClearBackground(WinColor);
         EndDrawing();
     }
 
@@ -76,10 +66,9 @@ int main(){
 
 
 void Setup(){
-    // This program uses Random number generators
+    // This program uses Random number generator
     // To generate a proper number, a random seed is required
     // Here, we just input the current time as a seed
-
     windows::SYSTEMTIME CurrentTime;
     windows::GetSystemTime(&CurrentTime);
     SetRandomSeed   (((long long)CurrentTime.wYear * 1000000000000000) + 
@@ -88,6 +77,10 @@ void Setup(){
                     ((long long)CurrentTime.wHour * 1000000) +
                     ((long long)CurrentTime.wMinute * 1000) +
                     ((long long)CurrentTime.wSecond));
+}
+
+void Run(){
+    if (IsKeyReleased(KEY_HOME)) {Foo();}
 }
 
 // Debug test function
@@ -137,8 +130,4 @@ void Foo(){
     cout << endl << "------------------------------------------------------";
     cout << endl << "------------------------------------------------------" << endl;
     
-}
-
-void Run(){
-    if (IsKeyReleased(KEY_HOME)) {Foo();}
 }
