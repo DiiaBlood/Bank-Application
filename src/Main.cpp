@@ -96,7 +96,7 @@ void Foo(){
     Notebook.Display();
 
     cout << endl << "EDIT" << endl;
-    Testbook.Edit_Name(Test.ID, "Cummmmmmmmmmmm");
+    Testbook.Edit_Name(Test.ID, "Cummmmmmmmmmmmm");
     Testbook.Edit_Email(Test.ID, "SASASASASAEEE");
     Testbook.Edit_Name(Test.ID, "Test.Name.FuckThis");
     Testbook.Edit_Phone_Number(Test.ID, "2489218491");
