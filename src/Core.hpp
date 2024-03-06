@@ -3,7 +3,7 @@
 using namespace std;
 
 struct Node{
-    unsigned long ID                = 0;
+    long ID                = 0;
     string Name                      = "";
     string Mobile_Number             = "";
     string Email                     = "";
@@ -18,14 +18,18 @@ class List{
 private:
     Node *Tail = NULL; Node *Head = NULL;
 public:
-    Node *Search(unsigned long _ID);
+    Node *Search(long _ID);
     void Display();
-    unsigned long Add(string _Name, string _Mobile_Number,
-             string _Email, string _Profession, long _Money, 
-             bool _Account_Type, string _Bank_Name);
-    unsigned long Remove(unsigned long ID_);
-    void Deposite(unsigned long _ID, long Cash);
-    void Withdrawal(unsigned long _ID, long Cash);
-    void Transfer(unsigned long From_ID, unsigned long To_ID, long Amount);
-    // float Annual_Interest(int ID_);
+    int Validate(Node* TestNode);
+    long Add(Node NewUser);
+    int Edit_Name(long _ID, string _Name);
+    int Edit_Phone_Number(long _ID, string _Mobile_Number);
+    int Edit_Email(long _ID, string _Email);
+    int Edit_Profession(long _ID, string _Profession);
+    int Edit_Bank_Name(long _ID, string _Bank_Name);
+    long Remove(long ID_);
+    void Deposite(long _ID, long Cash);
+    void Withdrawal(long _ID, long Cash);
+    void Transfer(long From_ID, long To_ID, long Amount);
+    long Annual_Interest(int ID_, int Years, short Percentage);
 };

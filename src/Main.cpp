@@ -25,14 +25,15 @@ const float WinH = 480.0f;
 const Color WinColor = GRAY;
 const char* WinName = "Bank Application - Muktada A. Hatem";
 
+List Notebook;
+
+
 int main(){
     // Load the window
     InitWindow(WinW, WinH, WinName);
 
     // Load setup function
     Setup();
-
-    List Notebook;
 
     char buffer[64] = {"Write Here"};
     char buffer2[64] = {"Write Here"};
@@ -89,6 +90,55 @@ void Setup(){
                     ((long long)CurrentTime.wSecond));
 }
 
-void Run(){
+// Debug test function
+void Foo(){
+    List Testbook;
+
+    Node Test{0, "Aldskdskjakdja", "2418249", "ASkadkjadad", "Adkadka", 129481, 0, "Bonk"};
+    Node Tast{0, "EEEEEEEEEEEE", "234829", "sssssssss", "asfafqg", 129481, 0, "Bonk"};
+
+    cout << endl << "ADD" << endl;
+    Test.ID = Testbook.Add(Test);
+    Tast.ID = Testbook.Add(Tast);
+    Notebook.Display();
+
+    cout << endl << "EDIT" << endl;
+    Testbook.Edit_Name(Test.ID, "Cummmmmmmmmmmm");
+    Testbook.Edit_Email(Test.ID, "SASASASASAEEE");
+    Testbook.Edit_Name(Test.ID, "Test.Name.FuckThis");
+    Testbook.Edit_Phone_Number(Test.ID, "2489218491");
+    Testbook.Edit_Profession(Test.ID, "Prostitute");
+    Testbook.Display();
+
+    cout << endl << "DEPOSIT" << endl;
+
+    Testbook.Deposite(Test.ID, 6969);
+    Testbook.Display();
+
+    cout << endl << "WIHTDRAWAL"<< endl;
+
+    Testbook.Withdrawal(Test.ID, 100);
+    Testbook.Display();
+
+    cout << endl << "TRANSFER" << endl;
+
+    Testbook.Transfer(Test.ID, Tast.ID, 3000);
+
+    cout << endl << "ANNUAL INTEREST" << endl;
+
+    Testbook.Annual_Interest(Test.ID, 2, 10);
+    Testbook.Display();
+
+    cout << endl << "REMOVE" << endl;
+
+    Testbook.Remove(Test.ID);
+    Testbook.Display();
+
+    cout << endl << "------------------------------------------------------";
+    cout << endl << "------------------------------------------------------" << endl;
     
+}
+
+void Run(){
+    if (IsKeyReleased(KEY_HOME)) {Foo();}
 }
