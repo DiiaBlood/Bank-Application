@@ -1,1 +1,1 @@
-## I told my professor that if I made the bank homewrok into a program with interface, I can skip class for the rest of the year.
+## I told my teacher that if I made the bank homework into a program with interface, can I skip class for the rest of the year? He said yes.
