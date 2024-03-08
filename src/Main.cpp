@@ -13,49 +13,46 @@ namespace windows{
 
 // include other parts of the program
 #include "Core.hpp"
-#include "Global.h"
+#include "Interface.hpp"
+#include "Global.hpp"
 
 // Function definitions
 void Setup();
 void Run();
 void Foo();
+#ifdef DEBUG
+void Debug();
+#endif
 
 // Program's constants
-const float WinW = 800.0f;
+const float WinW = 960.0f;
 const float WinH = 480.0f;
-const Color WinColor = GRAY;
+const Color WinColor = DARKGRAY;
 const char* WinName = "Bank Application - Muktada A. Hatem";
 
 List Notebook;
-
+ItemList Accounts;
 
 int main(){
     // Load the window
     InitWindow(WinW, WinH, WinName);
+    // SetTargetFPS(60);
 
     // Load setup function
     Setup();
 
-    char buffer[64] = {"Write Here"};
-    char buffer2[64] = {"Write Here"};
-    int Active = true;
-    bool SS = false;
-    Vector2 OO = {2, 3};
-    Color something = BLACK;
-    Rectangle OE = {94, 20, 50, 59};
     while (!WindowShouldClose()){
         ClearBackground(WinColor);
         BeginDrawing();
 
-        GuiScrollPanel({0, 20, 480, 460}, "Accounts", {0, 0, 0, 1200}, &OO, &OE);
-
-        BeginScissorMode(0, 42, 465, 438);
-        GuiButton({4, 45+OO.y, 460, 40}, "+");
-        DrawCircle(100, 600 + OO.y, 50, RED);        
-        EndScissorMode();
-
         // Load the run function every frame
         Run();
+        
+        // Debug Code
+        #ifdef DEBUG
+        Debug();
+        #endif
+
         EndDrawing();
     }
 
@@ -77,13 +74,28 @@ void Setup(){
                     ((long long)CurrentTime.wHour * 1000000) +
                     ((long long)CurrentTime.wMinute * 1000) +
                     ((long long)CurrentTime.wSecond));
+    
+    
+    Accounts.SetBounds({0, 0, 480, 480});
+    Accounts.SetDepth(1000);
+    Accounts.SetTitle("Accounts:");
+    Accounts.SetData(&Notebook);
 }
 
 void Run(){
+    Node Mewo{0, "EEEEEEEEEEEE", "234829", "sssssssss", "asfafqg", 129481, 0, "Bonk"};
     if (IsKeyReleased(KEY_HOME)) {Foo();}
+    if (IsKeyReleased(KEY_ENTER)) {Accounts.Add_Item(Mewo); Notebook.Display(); }
+    
+    long Current_ID = Accounts.Render();
+    if (Current_ID == 1){
+        Accounts.Add_Item(Mewo);
+    } else if (Current_ID > 10){
+        cout << Current_ID << endl;
+    }
 }
 
-// Debug test function
+// Test function
 void Foo(){
     List Testbook;
 
@@ -96,7 +108,7 @@ void Foo(){
     Notebook.Display();
 
     cout << endl << "EDIT" << endl;
-    Testbook.Edit_Name(Test.ID, "Cummmmmmmmmmmmm");
+    Testbook.Edit_Name(Test.ID, "TestingTestingTesting");
     Testbook.Edit_Email(Test.ID, "SASASASASAEEE");
     Testbook.Edit_Name(Test.ID, "Test.Name.FuckThis");
     Testbook.Edit_Phone_Number(Test.ID, "2489218491");
@@ -131,3 +143,10 @@ void Foo(){
     cout << endl << "------------------------------------------------------" << endl;
     
 }
+
+#ifdef DEBUG
+void Debug(){
+    cout << "MOUSE X, Y: " << GetMousePosition().x << ", " << GetMousePosition().y;
+    DrawFPS(0, 0);
+}
+#endif

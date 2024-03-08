@@ -9,7 +9,7 @@ namespace windows{
 }
 
 #include "Core.hpp"
-#include "Global.h"
+#include "Global.hpp"
 
 Node *List::Search(long _ID){
     Node *Temp = new Node;
@@ -95,6 +95,7 @@ long List::Add(Node NewUser) {
     if (Head == NULL) {Head = Temp; Tail = Temp;}
     else {Tail->Link = Temp; Tail = Temp;}
 
+    ITEM_COUNT += 1;
     return NewUser.ID;
 }
 
@@ -108,7 +109,6 @@ int List::Edit_Name(long _ID, string _Name){
     }
     return -1;
 }
-
 int List::Edit_Phone_Number(long _ID, string _Mobile_Number){
     Node* Temp = Search(_ID);
     if (Temp != NULL){
@@ -119,7 +119,6 @@ int List::Edit_Phone_Number(long _ID, string _Mobile_Number){
     }
     return -1;
 }
-
 int List::Edit_Email(long _ID, string _Email){
     Node* Temp = Search(_ID);
     if (Temp != NULL){
@@ -155,7 +154,7 @@ long List::Remove(long _ID){
     Node *Cur, *Pre = new Node;
     Cur = Head;
 
-    if (Head == Tail && Head->ID == _ID) { delete Cur; Head = NULL; Tail = NULL; return 0;}
+    if (Head == Tail && Head->ID == _ID) { delete Cur; Head = NULL; Tail = NULL; ITEM_COUNT -= 1; return 0;}
 
     while (Cur->ID != _ID){
         if (Cur == NULL) {Error("Can't remove non-existing ID"); return -1;}
@@ -165,6 +164,7 @@ long List::Remove(long _ID){
     Pre->Link = Cur->Link;
 
     delete Cur; Head = NULL; Tail = NULL;
+    ITEM_COUNT -= 1;
     return 0;
 }
 
@@ -204,4 +204,8 @@ void List::Display(){
 
     Temp=Temp->Link;
     }
+}
+
+Node* List::Get_Head(){
+    return Head;
 }
