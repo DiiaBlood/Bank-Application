@@ -31,7 +31,7 @@ int List::Validate(Node* TestNode){
 
     // We do some checks to make sure everything is valid
     if (TestNode->Name.find_first_not_of("0123456789+=-_`~'\"/\\|<>,?!@#$%^&*()") != 0
-        or TestNode->Name.length() < 10 or TestNode->Name.length() > 30){
+        or TestNode->Name.length() < 3 or TestNode->Name.length() > 30){
         Error("Name is wrong");
         return -1;
     }
@@ -76,10 +76,10 @@ int List::Validate(Node* TestNode){
 }
 
 long List::Add(Node NewUser) {
+    if (Validate(&NewUser) == -1) {return -1;}
+
     // Generate ID
     NewUser.ID = GetRandomValue(100000, 1000000);
-
-    if (Validate(&NewUser) == -1) {return -1;}
 
     Node *Temp = new Node;
 
@@ -95,7 +95,7 @@ long List::Add(Node NewUser) {
     if (Head == NULL) {Head = Temp; Tail = Temp;}
     else {Tail->Link = Temp; Tail = Temp;}
 
-    ITEM_COUNT += 1;
+    ITEM_COUNT++;
     return NewUser.ID;
 }
 
@@ -154,17 +154,27 @@ long List::Remove(long _ID){
     Node *Cur, *Pre = new Node;
     Cur = Head;
 
-    if (Head == Tail && Head->ID == _ID) { delete Cur; Head = NULL; Tail = NULL; ITEM_COUNT -= 1; return 0;}
+    // Case no items
+    if (Head == NULL) { Error("Can't remove account when list is empty"); return -1; }
 
+    // Case one item only
+    if (Head == Tail && Head->ID == _ID) { delete Cur; Head = NULL; Tail = NULL; ITEM_COUNT--; return 0;}
+
+    // Case more than one item delete head
+    else if (Head->ID == _ID) { Head = Head->Link; delete Cur; ITEM_COUNT--; return 0; }
+
+    // Case more than one item in-between item
     while (Cur->ID != _ID){
         if (Cur == NULL) {Error("Can't remove non-existing ID"); return -1;}
         Pre = Cur;
         Cur = Cur->Link;
     }
-    Pre->Link = Cur->Link;
 
-    delete Cur; Head = NULL; Tail = NULL;
-    ITEM_COUNT -= 1;
+    if (Cur == Tail) { Tail = Pre; Tail->Link = NULL; delete Cur; ITEM_COUNT--; cout << "FUCK" << endl; return 0; }
+    cout << "fidge" << endl;
+    Pre->Link = Cur->Link;
+    delete Cur;
+    ITEM_COUNT--;
     return 0;
 }
 

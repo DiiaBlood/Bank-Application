@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include "../include/raylib.h"
 #include "../include/raygui.h"
 
@@ -11,6 +12,10 @@ namespace windows{
 // include other parts of the program
 #include "Interface.hpp"
 #include "Global.hpp"
+
+//--------------------------------------------------------------------
+//Item List Class
+//--------------------------------------------------------------------
 
 void ItemList::SetBounds(Rectangle _Bounds){
     Bounds = _Bounds;
@@ -74,16 +79,25 @@ long ItemList::Render(){
         };
 
         if (GuiButton(CurrentRect_ID, to_string(Cursor->ID).data())){
-            cout << Cursor->ID << endl;
+            // Copy the ID to clipboard
+            char* output = to_string(Cursor->ID).data();
+            size_t len = strlen(output) + 1;
+            windows::HGLOBAL hMem =  windows::GlobalAlloc(GMEM_MOVEABLE, len);
+            memcpy(windows::GlobalLock(hMem), output, len);
+            windows::GlobalUnlock(hMem);
+            windows::OpenClipboard(0);
+            windows::EmptyClipboard();
+            windows::SetClipboardData(CF_TEXT, hMem);
+            windows::CloseClipboard();
         }
 
         if (GuiButton(CurrentRect_Name, Cursor->Name.data())) {
-            cout << Cursor->ID << endl;
+            return Cursor->ID;
         }
         
         if (GuiButton(CurrentRect_X, "X")) {
             Items->Remove(Cursor->ID);
-            return 0;
+            return 2;
         }
 
         Cursor = Cursor->Link;
@@ -96,8 +110,68 @@ long ItemList::Render(){
                     ((Button_Height + Vertical_Distance) * Items->ITEM_COUNT),
                     Bounds.width - (2*Horizontal_Distance) - RAYLIB_SCROLL_WIDTH,
                     Button_Height},
-                    "+")) { cout << Items->ITEM_COUNT << endl; return 1; }
+                    "+")) { return 1; }
 
     EndScissorMode();
     return 0;
+}
+
+//--------------------------------------------------------------------
+//Edit Menu Class
+//--------------------------------------------------------------------
+
+EditMenu::EditMenu(Rectangle _Layout, int _Mode, string _Content){
+    Layout = _Layout;
+    Mode = _Mode;
+    Content = _Content;
+}
+
+void EditMenu::Set_Layout(Rectangle _Layout){
+    Layout = _Layout;
+}
+
+void EditMenu::Set_Mode(int _Mode){
+    Mode = _Mode;
+}
+
+void EditMenu::Set_Content(string _Content){
+    Content = _Content;
+}
+
+void EditMenu::Set_State(bool _State){
+    State = _State;
+}
+
+bool EditMenu::Get_Ticked(){
+    return Ticked;
+}
+
+string EditMenu::Get_Content(){
+    return Content;
+}
+
+int EditMenu::Render(){
+    // Normal Button
+    if (Mode == 0 and State){
+        if (GuiButton(Layout, Content.data())) {Mode = 1;}
+        else {Ticked = false;}
+    } 
+
+    // Edit Mode
+    else if (Mode == 1){
+        GuiTextBox(Layout, Content_Buffer, 64, State);
+        if (IsKeyReleased(KEY_ENTER)) { 
+            Ticked = true;
+            Content = Content_Buffer;
+            fill_n(Content_Buffer, 64, NULL);
+            Mode = 0;
+            return 1;
+            }
+        else if (IsKeyReleased(KEY_ESCAPE)) {Mode = 0; return 0; Ticked = false;}
+        else { Ticked = false; }
+
+        // GuiTextInputBox(Layout, Content.data(), Content_Buffer, Content, , 1);
+    }
+
+    return -1;
 }
