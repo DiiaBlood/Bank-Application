@@ -18,7 +18,7 @@ class ItemList{
         Rectangle Bounds = {0, 0, 0, 0}; Vector2 Scroll = {0, 0};
         Rectangle ViewBounds = {0, 0, 0, 0}; int Depth = 0;
         Rectangle View = {0, 0, 0, 0}; std::string Title;
-        float Button_Height = 30; float Button_ID_Width = 50;
+        float Button_Height = 30; float Button_ID_Width = 75;
         float Vertical_Distance = 10; float Horizontal_Distance = 10;
 
         // Backend

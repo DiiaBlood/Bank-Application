@@ -34,13 +34,13 @@ const char* WinName = "Bank Application - Muktada A. Hatem";
 List Notebook;
 
 // All new accounts start with this node than is edited later
-Node Starter_Node{0, "EDIT NAME!", "07700770077700", "EDIT@EMAIL!", "EDIT PROFESSION!", 25000, 0, "EDIT BANK!"};
+Node Starter_Node{0, "EDIT NAME", "07700770077700", "EDIT@EMAIL!", "EDIT PROFESSION!", 25000, 0, "EDIT BANK!"};
 
 long Current_Working_ID = 0;
 
 // UI Elemetns
 ItemList Accounts;
-EditMenu Name_Menu({500, 35, 440, 50}, 0, "EDIT NAME!");
+EditMenu Name_Menu({500, 35, 440, 50}, 0, "EDIT NAME");
 EditMenu Email_Menu({500, 105, 220, 50}, 0, "EDIT@EMAIL!");
 EditMenu Phone_Menu({730, 105, 210, 50}, 0, "07700770077700");
 EditMenu Profession_Menu({500, 175, 220, 50}, 0, "EDIT PROFESSION!");
@@ -49,8 +49,11 @@ EditMenu Deposit_Menu({500, 390, 100, 30}, 0, "AMOUNT");
 EditMenu Withdraw_Menu({610, 390, 100, 30}, 0, "AMOUNT");
 EditMenu Transfer_ID_Menu({720, 390, 80, 30}, 0, "ID");
 EditMenu Transfer_Amount_Menu({810, 390, 130, 30}, 0, "AMOUNT");
+EditMenu Annual_Years_Menu({500, 390, 100, 30}, 0, "YEARS");
+EditMenu Annual_Percentage_Menu({610, 390, 100, 30}, 0, "%");
 
 int FinanceMode = 0;
+string Annual_Interest_Handle = "ANUAL INTEREST";
 
 string Old_Name, Old_Email, Old_Phone, Old_Profession, Old_Bank;
 
@@ -61,7 +64,8 @@ int main(){
     SetExitKey(KEY_DELETE);
 
     // Change default font size          
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 12);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 20);
+    GuiSetStyle(DEFAULT, TEXT_SPACING, 2);
 
     // Load setup function
     Setup();
@@ -205,10 +209,12 @@ void Run(){
     if (Current_Working_ID > 10){
         GuiButton({500, 275, 440, 60}, to_string(Notebook.Search(Current_Working_ID)->Amount).data());
 
-        if (GuiButton({500, 350, 100, 30}, "Deposit"))          {FinanceMode = 1;}
-        else if (GuiButton({610, 350, 100, 30}, "Withdraw"))    {FinanceMode = 2;}
-        else if (GuiButton({720, 350, 220, 30}, "Transfer"))    {FinanceMode = 3;}
-
+        if (GuiButton({500, 350, 100, 30}, "Deposit"))              {FinanceMode = 1;}
+        else if (GuiButton({610, 350, 100, 30}, "Withdraw"))        {FinanceMode = 2;}
+        else if (GuiButton({720, 350, 220, 30}, "Transfer"))        {FinanceMode = 3;}
+        else if (GuiButton({500, 430, 440, 30}, "Annual Interest")) {FinanceMode = 4;}
+        
+        // Financial editing UI behaviour
         switch(FinanceMode){
             case(1):
                 Deposit_Menu.Set_State(1);
@@ -248,8 +254,21 @@ void Run(){
                     } else
                     Error("Wrong Amount");
                 }
+                break;
+            case(4):
+                Annual_Years_Menu.Set_State(1);
+                Annual_Percentage_Menu.Set_State(1);
+                Annual_Years_Menu.Render();
+                if (Annual_Percentage_Menu.Render()){
+                    Annual_Interest_Handle = to_string(Notebook.Annual_Interest(
+                    Current_Working_ID, atoi(Annual_Years_Menu.Get_Content().data()),
+                    atoi(Annual_Percentage_Menu.Get_Content().data()))).data();
+                }
+                GuiButton({720, 390, 220, 30}, Annual_Interest_Handle.data());
+                break;
         }
     }
+
 }
 
 // Test function

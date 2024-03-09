@@ -123,7 +123,7 @@ long ItemList::Render(){
                     Bounds.width - (2*Horizontal_Distance) - RAYLIB_SCROLL_WIDTH,
                     Button_Height},
                     "+")) { return 1; }
-
+    
     EndScissorMode();
     return 0;
 }
@@ -179,7 +179,6 @@ int EditMenu::Render(){
                 windows::LPCSTR strData =(windows::LPCSTR)windows::GlobalLock(hg);
                 windows::GlobalUnlock(hg);
                 windows::CloseClipboard();
-
                 Set_Content((string)strData);
                 Mode = 0;
                 return 1;

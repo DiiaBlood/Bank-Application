@@ -30,13 +30,14 @@ int List::Validate(Node* TestNode){
     if (TestNode == NULL) {Error("Can't validate NULL"); return -1;}
 
     // We do some checks to make sure everything is valid
-    if (TestNode->Name.find_first_not_of("0123456789+=-_`~'\"/\\|<>,?!@#$%^&*()") != 0
-        or TestNode->Name.length() < 3 or TestNode->Name.length() > 30){
+    if (TestNode->Name.find_first_of("023456789+=-_`~'\"/\\|<>,?!@#$%^&*()") != -1 or
+        (TestNode->Name.length() < 3 or TestNode->Name.length() > 30)){
         Error("Name is wrong");
         return -1;
     }
-    
-    if (TestNode->Mobile_Number.find_first_not_of("0123456789") == 0 or TestNode->Mobile_Number.length() < 3){
+
+    cout << TestNode->Mobile_Number.find_first_of("0123456789") << endl;
+    if (TestNode->Mobile_Number.find_first_of("0123456789") > 0 or TestNode->Mobile_Number.length() < 3){
         Error("Phone number is wrong");
         return -1;
     }
@@ -76,10 +77,10 @@ int List::Validate(Node* TestNode){
 }
 
 long List::Add(Node NewUser) {
-    if (Validate(&NewUser) == -1) {return -1;}
-
     // Generate ID
-    NewUser.ID = GetRandomValue(100000, 1000000);
+    NewUser.ID = GetRandomValue(10000, 100000);
+    
+    if (Validate(&NewUser) == -1) {return -1;}
 
     Node *Temp = new Node;
 
@@ -102,9 +103,9 @@ long List::Add(Node NewUser) {
 int List::Edit_Name(long _ID, string _Name){
     Node* Temp = Search(_ID);
     if (Temp != NULL){
-        Node BackUp = *Temp;
+        string BackUp = Temp->Name;
         Temp->Name = _Name;
-        if (Validate(Temp) == -1) {Temp->Name = BackUp.Name; return -1;}
+        if (Validate(Temp) == -1) {Temp->Name = BackUp; return -1;}
         return 0;
     }
     return -1;
@@ -170,8 +171,7 @@ long List::Remove(long _ID){
         Cur = Cur->Link;
     }
 
-    if (Cur == Tail) { Tail = Pre; Tail->Link = NULL; delete Cur; ITEM_COUNT--; cout << "FUCK" << endl; return 0; }
-    cout << "fidge" << endl;
+    if (Cur == Tail) { Tail = Pre; Tail->Link = NULL; delete Cur; ITEM_COUNT--; return 0; }
     Pre->Link = Cur->Link;
     delete Cur;
     ITEM_COUNT--;
@@ -210,7 +210,7 @@ void List::Transfer(long From_ID, long To_ID, long Amount){
 long List::Annual_Interest(int ID_, int Years, short Percentage){
     Node *Temp = Search(ID_);
     if (Temp != NULL)
-    return (Temp->Amount+(Temp->Amount * (Years * (Percentage/100))));
+    return (Temp->Amount+(float)(Temp->Amount * (float)(Years * ((float)Percentage/100.0f))));
     return -1;
 }
 
