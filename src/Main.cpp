@@ -34,17 +34,23 @@ const char* WinName = "Bank Application - Muktada A. Hatem";
 List Notebook;
 
 // All new accounts start with this node than is edited later
-Node Starter_Node{0, "EDIT ME!", "07700770077700", "EDIT@EMAIL.ME!", "EDIT PROFESSION!", 25000, 0, "EDIT BANK!"};
+Node Starter_Node{0, "EDIT NAME!", "07700770077700", "EDIT@EMAIL!", "EDIT PROFESSION!", 25000, 0, "EDIT BANK!"};
 
 long Current_Working_ID = 0;
 
 // UI Elemetns
 ItemList Accounts;
-EditMenu Name_Menu({500, 35, 200, 40}, 0, "EDIT ME!");
-EditMenu Email_Menu({720, 35, 200, 40}, 0, "EDIT@EMAIL.ME!");
-EditMenu Phone_Menu({500, 95, 200, 40}, 0, "07700770077700");
-EditMenu Profession_Menu({720, 95, 200, 40}, 0, "EDIT PROFESSION!");
-EditMenu Bank_Menu({500, 155, 420, 40}, 0, "EDIT BANK!");
+EditMenu Name_Menu({500, 35, 440, 50}, 0, "EDIT NAME!");
+EditMenu Email_Menu({500, 105, 220, 50}, 0, "EDIT@EMAIL!");
+EditMenu Phone_Menu({730, 105, 210, 50}, 0, "07700770077700");
+EditMenu Profession_Menu({500, 175, 220, 50}, 0, "EDIT PROFESSION!");
+EditMenu Bank_Menu({730, 175, 210, 50}, 0, "EDIT BANK!");
+EditMenu Deposit_Menu({500, 390, 100, 30}, 0, "AMOUNT");
+EditMenu Withdraw_Menu({610, 390, 100, 30}, 0, "AMOUNT");
+EditMenu Transfer_ID_Menu({720, 390, 80, 30}, 0, "ID");
+EditMenu Transfer_Amount_Menu({810, 390, 130, 30}, 0, "AMOUNT");
+
+int FinanceMode = 0;
 
 string Old_Name, Old_Email, Old_Phone, Old_Profession, Old_Bank;
 
@@ -53,6 +59,9 @@ int main(){
     InitWindow(WinW, WinH, WinName);
     SetTargetFPS(60);
     SetExitKey(KEY_DELETE);
+
+    // Change default font size          
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 12);
 
     // Load setup function
     Setup();
@@ -93,23 +102,22 @@ void Setup(){
     
     
     Accounts.SetBounds({0, 0, 480, 480});
-    Accounts.SetDepth(1000);
+    Accounts.SetDepth(10000);
     Accounts.SetTitle("Accounts:");
     Accounts.SetData(&Notebook);
 }
 
 void Run(){
     if (IsKeyReleased(KEY_HOME)) {Foo();}
-    Notebook.Display();
+    if (IsKeyReleased(KEY_PRINT_SCREEN)) {Notebook.Display();}
+
     // Accounts Panel
     long Running_ID;
     Running_ID = Accounts.Render();
 
     // Add button pressed (know from return)
     if (Running_ID == 1){
-        Starter_Node.Name = "EDIT ME! " + to_string(GetRandomValue(0, 1000));
-        Starter_Node.Email = "EDIT EMAIL! " + to_string(GetRandomValue(0, 1000));
-        Starter_Node.Mobile_Number = to_string(GetRandomValue(100, 10000));
+        Starter_Node.Mobile_Number = to_string(GetRandomValue(100, 10000000));
         Accounts.Add_Item(Starter_Node);
     } 
     
@@ -194,6 +202,54 @@ void Run(){
     // Finance Panel
     GuiPanel({480, 240, 480, 240}, "Finance:");
 
+    if (Current_Working_ID > 10){
+        GuiButton({500, 275, 440, 60}, to_string(Notebook.Search(Current_Working_ID)->Amount).data());
+
+        if (GuiButton({500, 350, 100, 30}, "Deposit"))          {FinanceMode = 1;}
+        else if (GuiButton({610, 350, 100, 30}, "Withdraw"))    {FinanceMode = 2;}
+        else if (GuiButton({720, 350, 220, 30}, "Transfer"))    {FinanceMode = 3;}
+
+        switch(FinanceMode){
+            case(1):
+                Deposit_Menu.Set_State(1);
+                if (Deposit_Menu.Render()){
+                    if (Deposit_Menu.Get_Content().find_first_not_of("0123456789") != 0){
+                        Notebook.Deposite(Current_Working_ID, atoi(Deposit_Menu.Get_Content().data()));
+                        Deposit_Menu.Set_State(0);
+                        Withdraw_Menu.Set_Content("AMOUNT");
+                        FinanceMode = 0;
+                    } else {Error("Wrong Amount");}
+                }
+                break;
+            case(2):
+                Withdraw_Menu.Set_State(1);
+                if (Withdraw_Menu.Render()){
+                    if (Withdraw_Menu.Get_Content().find_first_not_of("0123456789") != 0){
+                        Notebook.Withdrawal(Current_Working_ID, atoi(Withdraw_Menu.Get_Content().data()));
+                        Withdraw_Menu.Set_State(0);
+                        Withdraw_Menu.Set_Content("AMOUNT");
+                        FinanceMode = 0;
+                    } else {Error("Wrong Amount");}
+                }
+                break;
+            case(3):
+                Transfer_Amount_Menu.Set_State(1);
+                Transfer_ID_Menu.Set_State(1);
+                Transfer_ID_Menu.Render();
+                if (Transfer_Amount_Menu.Render()){
+                    if (Transfer_Amount_Menu.Get_Content().find_first_not_of("0123456789") != 0){
+                        if (Transfer_ID_Menu.Get_Content().find_first_not_of("0123456789") != 0){
+                            Notebook.Transfer(Current_Working_ID, atoi(Transfer_ID_Menu.Get_Content().data()), atoi(Transfer_Amount_Menu.Get_Content().data()));
+                            Transfer_Amount_Menu.Set_State(0); Transfer_ID_Menu.Set_State(0);
+                            Transfer_Amount_Menu.Set_Content("AMOUNT"); Transfer_ID_Menu.Set_Content("ID");
+                            FinanceMode = 0;
+                        } else
+                        Error("Wrong ID");
+                    } else
+                    Error("Wrong Amount");
+                }
+        }
+    }
 }
 
 // Test function

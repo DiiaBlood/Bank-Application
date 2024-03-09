@@ -2,6 +2,7 @@
 #include <cstring>
 #include "../include/raylib.h"
 #include "../include/raygui.h"
+// #include "clipboardxx.hpp"
 
 // We include the windows header in a namespace as to not collide with Raylib
 using std::cout, std::endl;
@@ -39,7 +40,7 @@ int ItemList::Add_Item(Node NewUser){
     return 0;
 }
 
-Node* Cursor = NULL; int Count = 0;
+Node* Cursor = NULL; int Count = 0; int Current_Y_Position = 0;
 Rectangle CurrentRect_ID;
 Rectangle CurrentRect_Name;
 Rectangle CurrentRect_X;
@@ -54,52 +55,63 @@ long ItemList::Render(){
 
     Count = 0; Cursor = Items->Get_Head();
     while (Cursor != NULL){
-        CurrentRect_ID = {
-            Bounds.x + Horizontal_Distance,
-            Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
-            ((Button_Height + Vertical_Distance) * Count),
-            Button_ID_Width,
-            Button_Height
-        };
+        // Only render when items are available on the screen
+        Current_Y_Position =    Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y + 
+                                (Button_Height + Vertical_Distance) * Count; 
 
-        CurrentRect_Name = {
-            Bounds.x + (Horizontal_Distance*2) + Button_ID_Width,
-            Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
-            ((Button_Height + Vertical_Distance) * Count),
-            Bounds.width - (4*Horizontal_Distance) - RAYLIB_SCROLL_WIDTH - Button_Height - Button_ID_Width,
-            Button_Height
-        };
 
-        CurrentRect_X = {
-            Bounds.width - Button_Height - (Horizontal_Distance) - RAYLIB_SCROLL_WIDTH,
-            Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
-            ((Button_Height + Vertical_Distance) * Count),
-            Button_Height,
-            Button_Height
-        };
+        if (Current_Y_Position < 480 and Current_Y_Position > -40){
 
-        if (GuiButton(CurrentRect_ID, to_string(Cursor->ID).data())){
-            // Copy the ID to clipboard
-            char* output = to_string(Cursor->ID).data();
-            size_t len = strlen(output) + 1;
-            windows::HGLOBAL hMem =  windows::GlobalAlloc(GMEM_MOVEABLE, len);
-            memcpy(windows::GlobalLock(hMem), output, len);
-            windows::GlobalUnlock(hMem);
-            windows::OpenClipboard(0);
-            windows::EmptyClipboard();
-            windows::SetClipboardData(CF_TEXT, hMem);
-            windows::CloseClipboard();
-        }
+            CurrentRect_ID = {
+                Bounds.x + Horizontal_Distance,
+                Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
+                ((Button_Height + Vertical_Distance) * Count),
+                Button_ID_Width,
+                Button_Height
+            };
 
-        if (GuiButton(CurrentRect_Name, Cursor->Name.data())) {
-            return Cursor->ID;
+            CurrentRect_Name = {
+                Bounds.x + (Horizontal_Distance*2) + Button_ID_Width,
+                Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
+                ((Button_Height + Vertical_Distance) * Count),
+                Bounds.width - (4*Horizontal_Distance) - RAYLIB_SCROLL_WIDTH - Button_Height - Button_ID_Width,
+                Button_Height
+            };
+
+            CurrentRect_X = {
+                Bounds.width - Button_Height - (Horizontal_Distance) - RAYLIB_SCROLL_WIDTH,
+                Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
+                ((Button_Height + Vertical_Distance) * Count),
+                Button_Height,
+                Button_Height
+            };
+
+            // Draw the ID button (Copies ID to clipboard when selected)
+            if (GuiButton(CurrentRect_ID, to_string(Cursor->ID).data())){
+                // Copy the ID to clipboard
+                char* output = to_string(Cursor->ID).data();
+                size_t len = strlen(output) + 1;
+                windows::HGLOBAL hMem =  windows::GlobalAlloc(GMEM_MOVEABLE, len);
+                memcpy(windows::GlobalLock(hMem), output, len);
+                windows::GlobalUnlock(hMem);
+                windows::OpenClipboard(0);
+                windows::EmptyClipboard();
+                windows::SetClipboardData(CF_TEXT, hMem);
+                windows::CloseClipboard();
+            }
+
+            // Draw the account (Selectes account when selected)
+            if (GuiButton(CurrentRect_Name, Cursor->Name.data())) {
+                return Cursor->ID;
+            }
+            
+            // Draw the X button (Deletes account when selected)
+            if (GuiButton(CurrentRect_X, "X")) {
+                Items->Remove(Cursor->ID);
+                return 2;
+            }
         }
         
-        if (GuiButton(CurrentRect_X, "X")) {
-            Items->Remove(Cursor->ID);
-            return 2;
-        }
-
         Cursor = Cursor->Link;
         Count++;
     }
@@ -153,13 +165,26 @@ string EditMenu::Get_Content(){
 int EditMenu::Render(){
     // Normal Button
     if (Mode == 0 and State){
-        if (GuiButton(Layout, Content.data())) {Mode = 1;}
-        else {Ticked = false;}
+        if (GuiButton(Layout, Content.data())) {Mode = 1; return 0;}
+        else {Ticked = false; return 0;}
     } 
 
     // Edit Mode
     else if (Mode == 1){
         GuiTextBox(Layout, Content_Buffer, 64, State);
+
+        if (IsKeyDown(KEY_LEFT_CONTROL) and IsKeyPressed(KEY_V)){
+                windows::OpenClipboard(windows::GetDesktopWindow());
+                windows::HGLOBAL hg = windows::GetClipboardData(CF_TEXT);
+                windows::LPCSTR strData =(windows::LPCSTR)windows::GlobalLock(hg);
+                windows::GlobalUnlock(hg);
+                windows::CloseClipboard();
+
+                Set_Content((string)strData);
+                Mode = 0;
+                return 1;
+        }
+
         if (IsKeyReleased(KEY_ENTER)) { 
             Ticked = true;
             Content = Content_Buffer;
@@ -168,7 +193,7 @@ int EditMenu::Render(){
             return 1;
             }
         else if (IsKeyReleased(KEY_ESCAPE)) {Mode = 0; return 0; Ticked = false;}
-        else { Ticked = false; }
+        else { Ticked = false; return 0;}
 
         // GuiTextInputBox(Layout, Content.data(), Content_Buffer, Content, , 1);
     }

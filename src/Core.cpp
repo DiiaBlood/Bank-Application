@@ -66,8 +66,8 @@ int List::Validate(Node* TestNode){
 
     while(Temp != NULL && TestNode->ID != Temp->ID) {
         if ( Temp->ID == TestNode->ID) {Error("ID Error - Please try again"); return -1;}
-        if ( Temp->Name == TestNode->Name) {Error("Name similar to another account"); return -1;}
-        if ( Temp->Email == TestNode->Email) {Error("Email similar to another account"); return -1;}
+        // if ( Temp->Name == TestNode->Name) {Error("Name similar to another account"); return -1;}
+        // if ( Temp->Email == TestNode->Email) {Error("Email similar to another account"); return -1;}
         if ( Temp->Mobile_Number == TestNode->Mobile_Number) {Error("Mobiel Number similar to another account"); return -1;}
         Temp = Temp->Link;
     }
@@ -180,20 +180,31 @@ long List::Remove(long _ID){
 
 void List::Deposite(long _ID, long Cash){
     Node *Temp = Search(_ID);
-    if (Temp != NULL)
-    Temp->Amount += Cash;
+    if (Temp != NULL){
+        if (Cash >= 1000)
+        Temp->Amount += Cash;
+        else
+        Error("Minimum Deposit amount is 1000");
+    }
 }
 
 void List::Withdrawal(long _ID, long Cash){
     Node *Temp = Search(_ID);
-    if (Temp != NULL)
-    Temp->Amount -= Cash;
+    if (Temp != NULL){
+        if (Temp->Amount >= Cash){
+            if (Cash >= 1000)
+            Temp->Amount -= Cash;
+            else
+            Error("Minimum Withdrawal amount is 1000");
+        } else
+        Error("Account does not have anough money");
+    }
 }
 
 void List::Transfer(long From_ID, long To_ID, long Amount){
     Node *From_Temp = Search(From_ID); Node *To_Temp = Search(To_ID);
     if (From_Temp != NULL && To_Temp != NULL)
-    {From_Temp->Amount -= Amount; To_Temp->Amount += Amount;}
+    {Withdrawal(From_ID, Amount); Deposite(To_ID, Amount);}
 }
 
 long List::Annual_Interest(int ID_, int Years, short Percentage){
