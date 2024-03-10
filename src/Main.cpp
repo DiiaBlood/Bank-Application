@@ -207,7 +207,9 @@ void Run(){
     GuiPanel({480, 240, 480, 240}, "Finance:");
 
     if (Current_Working_ID > 10){
+        GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(BLUE));
         GuiButton({500, 275, 440, 60}, to_string(Notebook.Search(Current_Working_ID)->Amount).data());
+        GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(DARKGRAY));
 
         if (GuiButton({500, 350, 100, 30}, "Deposit"))              {FinanceMode = 1;}
         else if (GuiButton({610, 350, 100, 30}, "Withdraw"))        {FinanceMode = 2;}
@@ -264,14 +266,19 @@ void Run(){
                     Current_Working_ID, atoi(Annual_Years_Menu.Get_Content().data()),
                     atoi(Annual_Percentage_Menu.Get_Content().data()))).data();
                 }
+                GuiSetStyle(BUTTON, BORDER, ColorToInt(BLUE));
                 GuiButton({720, 390, 220, 30}, Annual_Interest_Handle.data());
+                GuiSetStyle(BUTTON, BORDER, ColorToInt(DARKGRAY));
                 break;
         }
+
+        if (IsKeyReleased(KEY_ESCAPE)) {FinanceMode = 0;}
     }
 
 }
 
-// Test function
+// Debug functions
+#ifdef DEBUG
 void Foo(){
     List Testbook;
 
@@ -320,7 +327,6 @@ void Foo(){
     
 }
 
-#ifdef DEBUG
 void Debug(){
     cout << "MOUSE X, Y: " << GetMousePosition().x << ", " << GetMousePosition().y << endl;
     DrawFPS(0, 0);

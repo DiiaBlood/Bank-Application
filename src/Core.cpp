@@ -25,12 +25,12 @@ Node *List::Search(long _ID){
     return NULL;
 }
 
-int List::Validate(Node* TestNode){
+int List::Validate(Node* TestNode, bool New){
     // Make sure the pointer is correct
     if (TestNode == NULL) {Error("Can't validate NULL"); return -1;}
 
     // We do some checks to make sure everything is valid
-    if (TestNode->Name.find_first_of("023456789+=-_`~'\"/\\|<>,?!@#$%^&*()") != -1 or
+    if (TestNode->Name.find_first_of("0123456789+=`~'\"/\\|<>,?!@#$%^&*()") != -1 or
         (TestNode->Name.length() < 3 or TestNode->Name.length() > 30)){
         Error("Name is wrong");
         return -1;
@@ -65,8 +65,12 @@ int List::Validate(Node* TestNode){
     // After that, we check if some sensetive information is copied from a different account
     Node *Temp = new Node; Temp = Head;
 
+    // Error if ID was somehow the same
+    if (Temp != NULL && TestNode->ID == Temp->ID && New){
+        Error("ID Error - Please try again"); return -1;
+    }
+
     while(Temp != NULL && TestNode->ID != Temp->ID) {
-        if ( Temp->ID == TestNode->ID) {Error("ID Error - Please try again"); return -1;}
         // if ( Temp->Name == TestNode->Name) {Error("Name similar to another account"); return -1;}
         // if ( Temp->Email == TestNode->Email) {Error("Email similar to another account"); return -1;}
         if ( Temp->Mobile_Number == TestNode->Mobile_Number) {Error("Mobiel Number similar to another account"); return -1;}
@@ -78,9 +82,10 @@ int List::Validate(Node* TestNode){
 
 long List::Add(Node NewUser) {
     // Generate ID
-    NewUser.ID = GetRandomValue(10000, 100000);
+    NewUser.ID = GetRandomValue(10000, 999999);
+    // NewUser.ID = GetRandomValue(10000, 10010);
     
-    if (Validate(&NewUser) == -1) {return -1;}
+    if (Validate(&NewUser, 1) == -1) {return -1;}
 
     Node *Temp = new Node;
 
@@ -105,7 +110,7 @@ int List::Edit_Name(long _ID, string _Name){
     if (Temp != NULL){
         string BackUp = Temp->Name;
         Temp->Name = _Name;
-        if (Validate(Temp) == -1) {Temp->Name = BackUp; return -1;}
+        if (Validate(Temp, 0) == -1) {Temp->Name = BackUp; return -1;}
         return 0;
     }
     return -1;
@@ -115,7 +120,7 @@ int List::Edit_Phone_Number(long _ID, string _Mobile_Number){
     if (Temp != NULL){
         Node BackUp = *Temp;
         Temp->Mobile_Number = _Mobile_Number;
-        if (Validate(Temp) == -1) {Temp->Mobile_Number = BackUp.Mobile_Number; return -1;}
+        if (Validate(Temp, 0) == -1) {Temp->Mobile_Number = BackUp.Mobile_Number; return -1;}
         return 0;
     }
     return -1;
@@ -125,7 +130,7 @@ int List::Edit_Email(long _ID, string _Email){
     if (Temp != NULL){
         Node BackUp = *Temp;
         Temp->Email = _Email;
-        if (Validate(Temp) == -1) {Temp->Email = BackUp.Email; return -1;}
+        if (Validate(Temp, 0) == -1) {Temp->Email = BackUp.Email; return -1;}
         return 0;
     }
     return -1;
@@ -135,7 +140,7 @@ int List::Edit_Profession(long _ID, string _Profession){
     if (Temp != NULL){
         Node BackUp = *Temp;
         Temp->Profession = _Profession;
-        if (Validate(Temp) == -1) {Temp->Profession = BackUp.Profession; return -1;}
+        if (Validate(Temp, 0) == -1) {Temp->Profession = BackUp.Profession; return -1;}
         return 0;
     }
     return -1;
@@ -145,7 +150,7 @@ int List::Edit_Bank_Name(long _ID, string _Bank_Name){
     if (Temp != NULL){
         Node BackUp = *Temp;
         Temp->Bank_Name = _Bank_Name;
-        if (Validate(Temp) == -1) {Temp->Bank_Name = BackUp.Bank_Name; return -1;}
+        if (Validate(Temp, 0) == -1) {Temp->Bank_Name = BackUp.Bank_Name; return -1;}
         return 0;
     }
     return -1;

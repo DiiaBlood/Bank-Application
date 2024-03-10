@@ -26,7 +26,7 @@ public:
     Node* Get_Head();
     Node *Search(long _ID);
     void Display();
-    int Validate(Node* TestNode);
+    int Validate(Node* TestNode, bool New);
     long Add(Node NewUser);
 
     int Edit_Name(long _ID, string _Name);

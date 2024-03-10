@@ -44,6 +44,7 @@ Node* Cursor = NULL; int Count = 0; int Current_Y_Position = 0;
 Rectangle CurrentRect_ID;
 Rectangle CurrentRect_Name;
 Rectangle CurrentRect_X;
+int Dint = 0;
 
 long ItemList::Render(){
     ViewBounds.height = Bounds.height + Depth - RAYLIB_HEADER_HEIGHT;
@@ -54,11 +55,19 @@ long ItemList::Render(){
     // Draw all the items
 
     Count = 0; Cursor = Items->Get_Head();
+    
+    // Draw the ADD button
+    if (GuiButton({ Bounds.x + Horizontal_Distance, 
+                    Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
+                    ((Button_Height + Vertical_Distance) * Items->ITEM_COUNT),
+                    Bounds.width - (2*Horizontal_Distance) - RAYLIB_SCROLL_WIDTH,
+                    Button_Height},
+                    "+")) { return 1; }
+
     while (Cursor != NULL){
         // Only render when items are available on the screen
         Current_Y_Position =    Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y + 
                                 (Button_Height + Vertical_Distance) * Count; 
-
 
         if (Current_Y_Position < 480 and Current_Y_Position > -40){
 
@@ -105,24 +114,19 @@ long ItemList::Render(){
                 return Cursor->ID;
             }
             
+            GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(RED));
             // Draw the X button (Deletes account when selected)
             if (GuiButton(CurrentRect_X, "X")) {
                 Items->Remove(Cursor->ID);
+                GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(DARKGRAY));
                 return 2;
             }
+            GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(DARKGRAY));
         }
-        
+
         Cursor = Cursor->Link;
         Count++;
     }
-
-    // Draw the ADD button
-    if (GuiButton({ Bounds.x + Horizontal_Distance, 
-                    Bounds.y + RAYLIB_HEADER_HEIGHT + Vertical_Distance + Scroll.y +
-                    ((Button_Height + Vertical_Distance) * Items->ITEM_COUNT),
-                    Bounds.width - (2*Horizontal_Distance) - RAYLIB_SCROLL_WIDTH,
-                    Button_Height},
-                    "+")) { return 1; }
     
     EndScissorMode();
     return 0;
