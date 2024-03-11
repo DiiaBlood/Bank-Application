@@ -36,7 +36,6 @@ int List::Validate(Node* TestNode, bool New){
         return -1;
     }
 
-    cout << TestNode->Mobile_Number.find_first_of("0123456789") << endl;
     if (TestNode->Mobile_Number.find_first_of("0123456789") > 0 or TestNode->Mobile_Number.length() < 3){
         Error("Phone number is wrong");
         return -1;

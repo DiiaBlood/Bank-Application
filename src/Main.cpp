@@ -103,8 +103,7 @@ void Setup(){
                     ((long long)CurrentTime.wHour   * 1000000) +
                     ((long long)CurrentTime.wMinute * 1000) +
                     ((long long)CurrentTime.wSecond));
-    
-    
+
     Accounts.SetBounds({0, 0, 480, 480});
     Accounts.SetDepth(10000);
     Accounts.SetTitle("Accounts:");
@@ -277,56 +276,58 @@ void Run(){
 
 }
 
-// Debug functions
-#ifdef DEBUG
 void Foo(){
+    cout << endl << "--------------------------------------------------------------------";
+    cout << endl << "--------------------------------------------------------------------" << endl;
+
     List Testbook;
 
-    Node Test{0, "Aldskdskjakdja", "2418249", "ASkadkjadad", "Adkadka", 129481, 0, "Bonk"};
-    Node Tast{0, "EEEEEEEEEEEE", "234829", "sssssssss", "asfafqg", 129481, 0, "Bonk"};
+    Node Test{0, "Testing Name", "1010101", "Testing@Email.com", "A Test", 25000, 0, "Testing Bank"};
+    Node SecondTest{0, "Second Testing Name", "2020202", "SecondTesting@Email.com", "A Second Test", 129481, 0, "Second Bank"};
 
     cout << endl << "ADD" << endl;
-    Test.ID = Testbook.Add(Test);
-    Tast.ID = Testbook.Add(Tast);
-    Notebook.Display();
+    cout << "FIRST ID: " << (Test.ID = Testbook.Add(Test)) << endl;
+    cout << "SECOND ID: " << (SecondTest.ID = Testbook.Add(SecondTest)) << endl;
+    Testbook.Display();
 
     cout << endl << "EDIT" << endl;
-    Testbook.Edit_Name(Test.ID, "TestingTestingTesting");
-    Testbook.Edit_Email(Test.ID, "SASASASASAEEE");
-    Testbook.Edit_Name(Test.ID, "Test.Name.FuckThis");
-    Testbook.Edit_Phone_Number(Test.ID, "2489218491");
-    Testbook.Edit_Profession(Test.ID, "Prostitute");
+    Testbook.Edit_Name(Test.ID, "Edited Testing Name");
+    Testbook.Edit_Email(Test.ID, "Edited@Email.com");
+    Testbook.Edit_Phone_Number(Test.ID, "3030303");
+    Testbook.Edit_Profession(Test.ID, "Edited Profession");
     Testbook.Display();
 
-    cout << endl << "DEPOSIT" << endl;
+    cout << endl << "DEPOSIT 10000" << endl;
 
-    Testbook.Deposite(Test.ID, 6969);
+    Testbook.Deposite(Test.ID, 10000);
     Testbook.Display();
 
-    cout << endl << "WIHTDRAWAL"<< endl;
+    cout << endl << "WIHTDRAW 5000"<< endl;
 
-    Testbook.Withdrawal(Test.ID, 100);
+    Testbook.Withdrawal(Test.ID, 5000);
     Testbook.Display();
 
-    cout << endl << "TRANSFER" << endl;
+    cout << endl << "TRANSFER 10000" << endl;
 
-    Testbook.Transfer(Test.ID, Tast.ID, 3000);
+    Testbook.Transfer(Test.ID, SecondTest.ID, 10000);
 
-    cout << endl << "ANNUAL INTEREST" << endl;
+    cout << endl << "ANNUAL INTEREST OF TWO YEARS WITH 10%" << endl;
 
-    Testbook.Annual_Interest(Test.ID, 2, 10);
+    cout << Testbook.Annual_Interest(Test.ID, 2, 10) << endl;
+    cout << Testbook.Annual_Interest(SecondTest.ID, 2, 10) << endl;
+
+    cout << endl << "REMOVE SECOND NODE" << endl;
+
+    Testbook.Remove(SecondTest.ID);
     Testbook.Display();
 
-    cout << endl << "REMOVE" << endl;
-
-    Testbook.Remove(Test.ID);
-    Testbook.Display();
-
-    cout << endl << "------------------------------------------------------";
-    cout << endl << "------------------------------------------------------" << endl;
+    cout << endl << "--------------------------------------------------------------------";
+    cout << endl << "--------------------------------------------------------------------" << endl;
     
 }
 
+// Debug functions
+#ifdef DEBUG
 void Debug(){
     cout << "MOUSE X, Y: " << GetMousePosition().x << ", " << GetMousePosition().y << endl;
     DrawFPS(0, 0);
