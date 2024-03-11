@@ -51,10 +51,10 @@ int List::Validate(Node* TestNode, bool New){
         return -1;
     }
 
-    if (TestNode->Amount < 25000){
-        Error("Initial deposit is too low (25,000 minimum)");
-        return -1;
-    }
+    // if (TestNode->Amount < 25000){
+    //     Error("Initial deposit is too low (25,000 minimum)");
+    //     return -1;
+    // }
 
     if (TestNode->Bank_Name.length() < 3 or TestNode->Bank_Name.length() > 30){
         Error("Bank Name is wrong");
